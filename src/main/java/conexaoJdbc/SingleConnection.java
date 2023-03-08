@@ -1,4 +1,4 @@
-package cadastro.cadastro_JDBC;
+package conexaoJdbc;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

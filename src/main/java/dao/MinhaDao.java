@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import cadastro.cadastro_JDBC.SingleConnection;
+import conexaoJdbc.SingleConnection;
 //Importa a classe SingleConnection do pacote conexaoJdbc
 import model.MinhaUserPosJava;
 

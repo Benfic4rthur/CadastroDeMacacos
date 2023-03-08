@@ -22,7 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import cadastro.cadastro_JDBC.SingleConnection;
+import conexaoJdbc.SingleConnection;
 
 
 public class CadastroDB extends JFrame {
