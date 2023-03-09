@@ -7,12 +7,11 @@ public class MinhaUserPosJava {
 	private String nome;
 	private String email;
 	
-	public MinhaUserPosJava(Long id, String nome, String email) {
+	public MinhaUserPosJava(long id, String nome, String email) {
 		this.id = id;
 		this.nome = nome;
 		this.email = email;
 	}
-
 	public long getId() {
 		return id;
 	}
@@ -42,4 +41,21 @@ public class MinhaUserPosJava {
 	    }
 	    return enviadoComSucesso;
 	}
+	public boolean salvaCadastroEditado() {
+	    boolean enviadoComSucesso = false;
+	    try {
+	        MinhaDao dao = new MinhaDao();
+	        MinhaUserPosJava usuario = dao.buscarPorId(this.getId());
+	        if (usuario != null) {
+	            usuario.setNome(this.getNome());
+	            usuario.setEmail(this.getEmail());
+	            dao.update(usuario);
+	            enviadoComSucesso = true;
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return enviadoComSucesso;
+	}
+
 }

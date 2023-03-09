@@ -10,8 +10,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -19,10 +20,19 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import conexaoJdbc.SingleConnection;
+import dao.MinhaDao;
 
 
 public class CadastroDB extends JFrame {
@@ -58,7 +68,7 @@ public class CadastroDB extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		// Configura o tamanho da janela
-		setSize(390, 140);
+		setSize(525, 550);
 		// Obtém as dimensões da tela
 		Dimension tela = Toolkit.getDefaultToolkit().getScreenSize();
 		// Calcula a posição da janela no centro da tela
@@ -70,46 +80,35 @@ public class CadastroDB extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		/* Labels */
+		JLabel lbltitulocadastro = new JLabel("CADASTRO DE MACACOS");
+		lbltitulocadastro.setBounds(180, 10, 200, 14);
+		contentPane.add(lbltitulocadastro);
+		
+		JLabel lbltituloedicao = new JLabel("LISTA DE MACACOS");
+		lbltituloedicao.setBounds(180, 175, 200, 14);
+		contentPane.add(lbltituloedicao);
 
 		JLabel lblde = new JLabel("Nome de macaco:");
-		lblde.setBounds(10, 10, 120, 14);
+		lblde.setBounds(10, 35, 120, 14);
 		contentPane.add(lblde);
 
 		JLabel lblPara = new JLabel("E-mail de macaco:");
-		lblPara.setBounds(10, 35, 120, 14);
+		lblPara.setBounds(10, 60, 120, 14);
 		contentPane.add(lblPara);
 
 		/* Text Fields */
 
 		deField = new JTextField();
-		deField.setBounds(120, 7, 250, 20);
+		deField.setBounds(120, 32, 380, 20);
 		contentPane.add(deField);
 		deField.setColumns(10);
 
 		emailToField = new JTextField();
-		emailToField.setBounds(120, 32, 250, 20);
+		emailToField.setBounds(120, 57, 380, 20);
 		contentPane.add(emailToField);
 		emailToField.setColumns(10);
 
-		/* Mensagem */
-
-		/* Botão para anexar arquivo */
-
-		/* Listener do botão de anexo */
-
-		JButton btnEnviar = new JButton("Salvar macaco");
-		btnEnviar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					salvarCadastro();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
-		btnEnviar.setBounds(30, 70, 150, 23);
-		contentPane.add(btnEnviar);
+		
 		// Atribui à variável connection uma instância de Connection obtida através do
 		// método getConnection() da classe SingleConnection
 		connection = SingleConnection.getConnection();
@@ -121,9 +120,120 @@ public class CadastroDB extends JFrame {
 				emailToField.setText("");
 			}
 		});
-		btnLimpar.setBounds(200, 70, 150, 23);
+		btnLimpar.setBounds(250, 90, 130, 23);
 		contentPane.add(btnLimpar);
 
+		JTable table = new JTable();
+		MinhaDao dao = new MinhaDao();
+		List<MinhaUserPosJava> usuarios = dao.editar();
+		MinhaTableModel model = new MinhaTableModel(usuarios);
+		table.setModel(model);
+
+		// Define a largura da coluna de ID
+		TableColumnModel columnModel = table.getColumnModel();
+		columnModel.getColumn(0).setCellRenderer(new DefaultTableCellRenderer());
+		columnModel.getColumn(0).setPreferredWidth(0);
+		columnModel.getColumn(0).setMinWidth(50);
+		columnModel.getColumn(0).setMaxWidth(200);
+
+		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING)); // 0 representa a coluna de ID
+		sorter.setSortKeys(sortKeys);
+		table.setRowSorter(sorter);
+
+		
+		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane.setBounds(10, 200, 490, 250);
+		contentPane.add(scrollPane);
+		JButton btnEnviar = new JButton("Salvar macaco");
+		btnEnviar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					salvarCadastro();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				 // Atualiza a tabela com os dados atualizados
+	            List<MinhaUserPosJava> usuariosAtualizados = dao.editar();
+	            model.atualizar(usuariosAtualizados);
+			}
+			
+		});
+		btnEnviar.setBounds(120, 90, 120, 23);
+		contentPane.add(btnEnviar);
+		
+		JButton btnEditar = new JButton("Editar Macaco");
+		btnEditar.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		        int selectedRow = table.getSelectedRow();
+		        btnEnviar.setEnabled(false);
+		        if (selectedRow != -1) {
+		            // Obtém os valores das células da linha selecionada
+		            Object nome = table.getValueAt(selectedRow, 1);
+		            Object email = table.getValueAt(selectedRow, 2);
+		            
+		            // Preenche os campos de edição com os valores obtidos
+		            deField.setText(nome.toString());
+		            emailToField.setText(email.toString());
+		        }
+		    }
+		});
+		btnEditar.setBounds(120, 470, 130, 23);
+		contentPane.add(btnEditar);
+
+		JButton btnSalvamacaco = new JButton("Salvar macaco");
+		btnSalvamacaco.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		        int selectedRow = table.getSelectedRow();
+		        if (selectedRow != -1) {
+		            // Obtém os valores dos campos de edição
+		            String nome = deField.getText();
+		            String email = emailToField.getText();
+		            Long id = (Long) table.getValueAt(selectedRow, 0);
+		            
+		            // Cria um objeto MinhaUserPosJava com os valores obtidos
+		            MinhaUserPosJava usuario = new MinhaUserPosJava(id, nome, email);
+		            
+		            // Chama o método de atualização do DAO passando o objeto criado como argumento
+		            dao.update(usuario);
+		            
+		            // Atualiza a tabela com os dados atualizados
+		            List<MinhaUserPosJava> usuariosAtualizados = dao.editar();
+		            model.atualizar(usuariosAtualizados);
+		            
+		            // Simula um clique no botão de limpar para limpar os campos da interface gráfica
+		            btnLimpar.doClick();
+		            btnEnviar.setEnabled(true);
+		        }
+		    }
+		});
+
+		btnSalvamacaco.setBounds(260, 470, 130, 23);
+		contentPane.add(btnSalvamacaco);
+		int selectedRow = table.getSelectedRow();
+	    if (selectedRow != -1) {
+	        // Obtém os valores dos campos de edição
+	        String nome = deField.getText();
+	        String email = emailToField.getText();
+	        Long id = (Long) table.getValueAt(selectedRow, 0);
+	        
+	        // Cria um objeto MinhaUserPosJava com os valores obtidos
+	        MinhaUserPosJava usuario = new MinhaUserPosJava(id, email, email);
+	        usuario.setId(id);
+	        usuario.setNome(nome);
+	        usuario.setEmail(email);
+	        
+	        // Chama o método de atualização do DAO passando o objeto criado como argumento
+	        dao.update(usuario);
+	        
+	        // Atualiza a tabela com os dados atualizados
+	        List<MinhaUserPosJava> usuariosAtualizados = dao.editar();
+	        model.atualizar(usuariosAtualizados);
+	        }
+	   
+		
 	}
 
 	public int buscarUltimoId() throws SQLException {
@@ -181,7 +291,7 @@ public class CadastroDB extends JFrame {
 				boolean enviadoComSucesso = minhaUserposJava.salvaCadastro();
 				if (enviadoComSucesso) {
 					if (enviadoComSucesso) {
-						JOptionPane.showMessageDialog(null, "Você cadastrou " + nome + " com sucesso!");
+						JOptionPane.showMessageDialog(null, "Você editou " + nome + " com sucesso!");
 						ImageIcon icon = new ImageIcon(
 								"C:\\workspace-java\\cadastro-JDBC\\src\\main\\java\\images\\macaco_feliz.jpg"); 
 						// substitua o caminho pela localização da sua imagem
@@ -201,5 +311,6 @@ public class CadastroDB extends JFrame {
 				JOptionPane.showMessageDialog(null, "Ocorreu um erro ao Salvar o Cadastro:" + ex.getMessage());
 			}
 		}
+		
 	}
 }
