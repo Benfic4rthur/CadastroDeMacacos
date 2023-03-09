@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import conexaoJdbc.SingleConnection;
+import model.MinhaTableModel;
 import model.MinhaUserPosJava;
 
 public class MinhaDao {
@@ -97,10 +98,22 @@ public class MinhaDao {
             update.setLong(3, minhaUserPosJava.getId());
             update.execute();
             connection.commit();
-            update.close();
-        } catch (Exception e) {
+            } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    public void excluir(long userId) {
+    	try {
+    	String sql = "DELETE FROM cadastro_de_macacos WHERE id=?";
+    	PreparedStatement delete = connection.prepareStatement(sql);
+    	delete.setLong(1, userId);
+    	delete.execute();
+    	connection.commit();
+    	delete.close();
+    	} catch (Exception e) {
+    	e.printStackTrace();
+    	}
+    }
+   
 
 }

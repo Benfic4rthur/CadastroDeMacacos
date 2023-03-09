@@ -27,6 +27,7 @@ import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
@@ -167,7 +168,12 @@ public class CadastroDB extends JFrame {
 		JButton btnEditar = new JButton("Editar Macaco");
 		btnEditar.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
-		        int selectedRow = table.getSelectedRow();
+		    	 int selectedRow = table.getSelectedRow();
+		            if (selectedRow == -1) {
+		                JOptionPane.showMessageDialog(null, "Selecione um macaco para editar.");
+		                return;
+		            }
+		        else {
 		        btnEnviar.setEnabled(false);
 		        if (selectedRow != -1) {
 		            // Obtém os valores das células da linha selecionada
@@ -179,15 +185,19 @@ public class CadastroDB extends JFrame {
 		            emailToField.setText(email.toString());
 		        }
 		    }
-		});
-		btnEditar.setBounds(120, 470, 130, 23);
+		    }});
+		btnEditar.setBounds(40, 470, 130, 23);
 		contentPane.add(btnEditar);
 
-		JButton btnSalvamacaco = new JButton("Salvar macaco");
+		JButton btnSalvamacaco = new JButton("Salvar edição");
 		btnSalvamacaco.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
-		        int selectedRow = table.getSelectedRow();
-		        if (selectedRow != -1) {
+		    	 int selectedRow = table.getSelectedRow();
+		            if (selectedRow == -1) {
+		                JOptionPane.showMessageDialog(null, "Selecione um macaco para salvar.");
+		                return;
+		            }
+		        else {
 		            // Obtém os valores dos campos de edição
 		            String nome = deField.getText();
 		            String email = emailToField.getText();
@@ -210,7 +220,7 @@ public class CadastroDB extends JFrame {
 		    }
 		});
 
-		btnSalvamacaco.setBounds(260, 470, 130, 23);
+		btnSalvamacaco.setBounds(180, 470, 130, 23);
 		contentPane.add(btnSalvamacaco);
 		int selectedRow = table.getSelectedRow();
 	    if (selectedRow != -1) {
@@ -232,10 +242,36 @@ public class CadastroDB extends JFrame {
 	        List<MinhaUserPosJava> usuariosAtualizados = dao.editar();
 	        model.atualizar(usuariosAtualizados);
 	        }
-	   
-		
-	}
+	    JButton btnExcluir = new JButton("Excluir macaco");
+	    btnExcluir.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	            int selectedRow = table.getSelectedRow();
+	            if (selectedRow == -1) {
+	                JOptionPane.showMessageDialog(null, "Selecione um macaco para excluir.");
+	                return;
+	            }
+	            
+	            long macacoId = (long) table.getModel().getValueAt(selectedRow, 0);
+	            
+	            MinhaDao minhaDao = new MinhaDao();
+	            minhaDao.excluir(macacoId);
+	            
+	            // Atualiza a tabela com os dados atualizados
+		        List<MinhaUserPosJava> usuariosAtualizados = dao.editar();
+		        model.atualizar(usuariosAtualizados);
+		        MinhaTableModel model = new MinhaTableModel(usuarios);
+		        model.setRowCount(0);
+	            ArrayList<MinhaUserPosJava> editar = new ArrayList<>();
+	            if (editar != null) {
+	                for (MinhaUserPosJava user : editar) {
+	                model.addRow(new Object[]{user.getId(), user.getNome(), user.getEmail()});
+	            }
+	        }
+	        }});
+	    btnExcluir.setBounds(320, 470, 150, 23);
+	    contentPane.add(btnExcluir);
 
+	}
 	public int buscarUltimoId() throws SQLException {
 		String sql = "SELECT MAX(id) FROM cadastro_de_macacos;";
 		PreparedStatement select = connection.prepareStatement(sql);
@@ -257,7 +293,6 @@ public class CadastroDB extends JFrame {
 			JOptionPane.showMessageDialog(null, "Por favor, preencha todos os campos.");
 			return;
 		}
-
 		String[] imagensDeErro = { "C:\\workspace-java\\cadastro-JDBC\\src\\main\\java\\images\\macaco_De_olho.jpg",
 									"C:\\workspace-java\\cadastro-JDBC\\src\\main\\java\\images\\macaco_pistola.jpg",
 									"C:\\workspace-java\\cadastro-JDBC\\src\\main\\java\\images\\macaco_vaitelasca.jpg",
@@ -291,17 +326,7 @@ public class CadastroDB extends JFrame {
 				boolean enviadoComSucesso = minhaUserposJava.salvaCadastro();
 				if (enviadoComSucesso) {
 					if (enviadoComSucesso) {
-						JOptionPane.showMessageDialog(null, "Você editou " + nome + " com sucesso!");
-						ImageIcon icon = new ImageIcon(
-								"C:\\workspace-java\\cadastro-JDBC\\src\\main\\java\\images\\macaco_feliz.jpg"); 
-						// substitua o caminho pela localização da sua imagem
-						JDialog dialog = new JDialog();
-						dialog.setTitle("Você alegrou um macaco"); // define o título da janela
-						JLabel label = new JLabel(icon);
-						dialog.getContentPane().add(label);
-						dialog.pack();
-						dialog.setVisible(true);
-						dialog.setLocationRelativeTo(null); // centralizar a imagem na tela
+						JOptionPane.showMessageDialog(null, "Você cadastrou " + nome + " com sucesso!");
 					}
 				} else {
 					JOptionPane.showMessageDialog(null, "Ocorreu um erro ao Salvar o Cadastro.");
