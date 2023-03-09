@@ -62,7 +62,7 @@ public class CadastroDB extends JFrame {
 	private Connection connection;
 
 	public CadastroDB() {
-		setTitle("Cadastro Macacos");
+		setTitle("SINACCAM - Sistema Nacional De Cadastro De Macacos");
 		setBounds(100, 100, 470, 380);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -269,6 +269,7 @@ public class CadastroDB extends JFrame {
 	            if(excluir == 0) {	            
 	            long macacoId = (long) table.getModel().getValueAt(selectedRow, 0);
 	            
+	            
 	            MinhaDao minhaDao = new MinhaDao();
 	            minhaDao.excluir(macacoId);
 	            
@@ -278,13 +279,16 @@ public class CadastroDB extends JFrame {
 		        MinhaTableModel model = new MinhaTableModel(usuarios);
 		        model.setRowCount(0);
 	            ArrayList<MinhaUserPosJava> editar = new ArrayList<>();
+	            JOptionPane.showMessageDialog(null, "Pobre macaco, virou estrelinha!");
+            	
 	            if (editar != null) {
 	                for (MinhaUserPosJava user : editar) {
 	                model.addRow(new Object[]{user.getId(), user.getNome(), user.getEmail()});
+	                
 	            }
 	        }
 	            } else if (excluir == 1 || excluir == 2) {
-	            	JOptionPane.showMessageDialog(null, "Então não enche o saco, macaco ocupado!");
+	            	JOptionPane.showMessageDialog(null, "Então não enche, o macaco esta ocupado!");
 	            	return;
 	            }
 	        }});
