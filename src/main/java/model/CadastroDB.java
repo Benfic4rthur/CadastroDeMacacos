@@ -159,6 +159,8 @@ public class CadastroDB extends JFrame {
 				 // Atualiza a tabela com os dados atualizados
 	            List<MinhaUserPosJava> usuariosAtualizados = dao.editar();
 	            model.atualizar(usuariosAtualizados);
+	         // Simula um clique no botão de limpar para limpar os campos da interface gráfica
+	            btnLimpar.doClick();
 			}
 			
 		});
@@ -304,7 +306,7 @@ public class CadastroDB extends JFrame {
 				"Cuidado com o macaco, ele não tolera erros!","DANGER! LO MACACO ESTAS BRAVITO!" , "O macaco não esta nada surpreso com seu erro!" ,
 				"Se você continuar errando, não poderá ser um macaco nunca!" , "Errar é humano, macacos não cometem esta falha!"};
 
-		if (!nome.contains("macaco") && !nome.contains("Macaco") && !nome.contains("MACACO")) {
+		if (!nome.contains("macaco") && !nome.contains("Macaco") && !nome.contains("MACACO") && !nome.contains("masqueico") && !nome.contains("Masqueico")) {
 			JOptionPane.showMessageDialog(null,
 					"Por favor, preencha com dados de macaco");
 			Random rand = new Random();
