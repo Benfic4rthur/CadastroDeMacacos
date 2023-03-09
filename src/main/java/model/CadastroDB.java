@@ -113,6 +113,8 @@ public class CadastroDB extends JFrame {
 		// Atribui à variável connection uma instância de Connection obtida através do
 		// método getConnection() da classe SingleConnection
 		connection = SingleConnection.getConnection();
+		
+		//botão limpa macaco
 
 		JButton btnLimpar = new JButton("Limpar Macaco");
 		btnLimpar.addActionListener(new ActionListener() {
@@ -147,6 +149,9 @@ public class CadastroDB extends JFrame {
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setBounds(10, 200, 490, 250);
 		contentPane.add(scrollPane);
+		
+		//botão salva macaco
+		
 		JButton btnEnviar = new JButton("Salvar macaco");
 		btnEnviar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -166,6 +171,8 @@ public class CadastroDB extends JFrame {
 		});
 		btnEnviar.setBounds(120, 90, 120, 23);
 		contentPane.add(btnEnviar);
+		
+		//botão edita macaco
 		
 		JButton btnEditar = new JButton("Editar Macaco");
 		btnEditar.addActionListener(new ActionListener() {
@@ -190,6 +197,8 @@ public class CadastroDB extends JFrame {
 		    }});
 		btnEditar.setBounds(40, 470, 130, 23);
 		contentPane.add(btnEditar);
+		
+		//botão salva macaco editado
 
 		JButton btnSalvamacaco = new JButton("Salvar edição");
 		btnSalvamacaco.addActionListener(new ActionListener() {
@@ -221,9 +230,10 @@ public class CadastroDB extends JFrame {
 		        }
 		    }
 		});
-
+		
 		btnSalvamacaco.setBounds(180, 470, 130, 23);
 		contentPane.add(btnSalvamacaco);
+		
 		int selectedRow = table.getSelectedRow();
 	    if (selectedRow != -1) {
 	        // Obtém os valores dos campos de edição
@@ -244,6 +254,9 @@ public class CadastroDB extends JFrame {
 	        List<MinhaUserPosJava> usuariosAtualizados = dao.editar();
 	        model.atualizar(usuariosAtualizados);
 	        }
+	    
+	    //botão excluir macaco
+	    
 	    JButton btnExcluir = new JButton("Excluir macaco");
 	    btnExcluir.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
@@ -252,7 +265,8 @@ public class CadastroDB extends JFrame {
 	                JOptionPane.showMessageDialog(null, "Selecione um macaco para excluir.");
 	                return;
 	            }
-	            
+	            int excluir = JOptionPane.showConfirmDialog(null, "Deseja mesmo excluir o macaco?");
+	            if(excluir == 0) {	            
 	            long macacoId = (long) table.getModel().getValueAt(selectedRow, 0);
 	            
 	            MinhaDao minhaDao = new MinhaDao();
@@ -269,6 +283,10 @@ public class CadastroDB extends JFrame {
 	                model.addRow(new Object[]{user.getId(), user.getNome(), user.getEmail()});
 	            }
 	        }
+	            } else if (excluir == 1 || excluir == 2) {
+	            	JOptionPane.showMessageDialog(null, "Então não enche o saco, macaco ocupado!");
+	            	return;
+	            }
 	        }});
 	    btnExcluir.setBounds(320, 470, 150, 23);
 	    contentPane.add(btnExcluir);
